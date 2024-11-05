@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Presentation</title>
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        /* Presentation container */
+        .presentation {
+            position: relative;
+            width: 90%;
+            max-width: 400px;
+            height: 80vh;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Slide styles */
+        .slide {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 20px;
+            text-align: center;
+        }
+        .slide img {
+            max-width: 80%;
+            height: auto;
+            margin-bottom: 15px;
+        }
+        .slide h2 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+        .slide p {
+            font-size: 1em;
+            color: #666;
+        }
+        .slide.active {
+            display: flex;
+        }
+
+        /* Navigation buttons */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: #eee;
+        }
+        .controls button {
+            padding: 10px 15px;
+            font-size: 1em;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-back {
+            background-color: #888;
+        }
+        .btn-next {
+            background-color: #3498db;
+        }
+
+        /* Jumpscare Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            color: #fff;
+        }
+        .modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            text-align: center;
+            background-color: #222;
+            border-radius: 8px;
+        }
+        .modal img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .modal button.close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: transparent;
+            color: #fff;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="presentation">
+    <!-- Slide 1 -->
+    <div class="slide active">
+        <img src="images/una.png" alt="Image 1">
+        <h2>Una</h2>
+        <p>Sorry sa nangyare kanina</p>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide">
+        <img src="images/pangalawa.jpg" alt="Image 2">
+        <h2>Pangalawa</h2>
+        <p>Hayaan moko maka bawi sayo</p>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide">
+        <img src="images/pangatlo.png" alt="Image 3">
+        <h2>Pangatlo</h2>
+        <p>Lumapit ka sakin tumawag ka lalo na pag alam mong makakatulong ako<br> lumapit ka sakin tulog man o hindi 
+            sorry den kasi wala ako nung time na naalungkot ka nag kakaganto <br>lang tayo pero may pakialam ako sayo kahit ano pang sabihin mo may pake ako sayo
+        </p>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="slide">
+        <h2>Pangapat</h2>
+        <p>I love you althea mahal na mahal kita</p>
+    </div>
+
+    <!-- Jumpscare Modal -->
+    <div class="modal" id="jumpscareModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">✖</button>
+            <img src="images/main.jpg" alt="Jumpscare Image">
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="controls">
+        <button class="btn-back" onclick="prevSlide()">Back</button>
+        <button class="btn-next" onclick="nextSlide()">Next</button>
+    </div>
+</div>
+
+<!-- Sound for Jumpscare and Second Sound -->
+<audio id="jumpscare-sound" src="images/huha.mp3"></audio>
+<audio id="next-sound" src="images/main.mp3"></audio>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const jumpscareSound = document.getElementById('jumpscare-sound');
+    const nextSound = document.getElementById('next-sound');
+    const modal = document.getElementById('jumpscareModal');
+
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === index);
+        });
+        updateButtons();
+    }
+
+    function nextSlide() {
+        if (currentSlide === 2) { // Trigger modal on slide 3 to 4 transition
+            showModal();
+        } else if (currentSlide < slides.length - 1) {
+            currentSlide++;
+            showSlide(currentSlide);
+        }
+    }
+
+    function prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            showSlide(currentSlide);
+        }
+    }
+
+    function updateButtons() {
+        document.querySelector('.btn-back').disabled = currentSlide === 0;
+        document.querySelector('.btn-next').disabled = currentSlide === slides.length - 1;
+    }
+
+    function showModal() {
+        modal.style.display = 'flex';
+        jumpscareSound.play();
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+        jumpscareSound.pause();  // Pause the jumpscare sound
+        jumpscareSound.currentTime = 0;  // Reset to the start (optional)
+        nextSound.play();  // Play the other sound when closing the modal
+        currentSlide++;
+        showSlide(currentSlide);  // Move to slide 4
+    }
+
+    showSlide(currentSlide);
+</script>
+
+</body>
+</html>
